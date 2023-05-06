@@ -1,0 +1,119 @@
+{%if option.name == "Items"%}
+
+
+                          <label class="single-option-radio__label{% if option.name == 'Default' or option.name == 'Title' %} hidden-label{% endif %}"
+                              for="ProductSelect--{{ section.id }}-option-{{ forloop.index0 }}">
+                              {{ option.name | escape }}
+                            </label>
+
+
+                            
+                              <fieldset class="single-option-radio customItemVariantBox"
+                                name="{{ option.name | handleize }}"
+                                id="ProductSelect--{{ section.id }}-option-{{ forloop.index0 }}">
+                                {% assign option_index = forloop.index %}
+                                {% for value in option.values %}
+                                  {% assign variant = product.variants | where: 'option1', value | first %}
+                                  {% if variant %}
+                                    {% assign price = variant.price | money %}
+                                    {% assign compared_price = variant.compare_at_price_max | money %}
+                                  {% endif %}
+                              
+                                  {% assign variant_label_state = true %}
+                                  {% if product.options.size == 1 %}
+                                    {% unless variant.available %}
+                                      {% assign variant_label_state = false %}
+                                    {% endunless %}
+                                  {% endif %}
+                              
+                                  <input type="radio"
+                                    {% if option.selected_value == value %} checked="checked"{% endif %}
+                                    {% unless variant_label_state %} disabled="disabled"{% endunless %}
+                                    value="{{ value | escape }}"
+                                    data-index="option{{ option_index }}"
+                                    name="{{ option.name | handleize }}"
+                                    class="single-option-selector__radio{% unless variant_label_state %} disabled{% endunless %}"
+                                    id="ProductSelect--{{ section.id }}-option-{{ option.name | handleize }}-{{ value | escape }}">
+                                  <label for="ProductSelect--{{ section.id }}-option-{{ option.name | handleize }}-{{ value | escape }}"class="customItemVariant btn btn--small {% unless variant_label_state %} disabled{% endunless %}">
+                                    <div class="variantValue">
+                                      {{ value | escape }} 
+                                    </div>
+                                    <div class="variantPrice"> 
+
+                                  {% if variant.available %}
+                                    {% if variant.compare_at_price > variant.price %} 
+                                      
+                                      <span class="discount">
+                                          {{ 100 | plus: variant.price | times: 100 | divided_by: variant.compare_at_price | round   }}% Save
+                                      </span>
+                                      
+                                      <span class="price price--compare">
+                                           {{ variant.compare_at_price | money }}
+                                      </span>
+                                      <span class="price price--sale">
+                                          {{ variant.price | money }}
+                                      </span>
+                                      {% else %}
+                                      <span class="price">
+                                          {{ variant.price | money }}
+                                      </span>
+                                    {% endif %}
+                                  {% else %}
+                                    <span class="price price--unavailable">
+                                        {{ 'products.product.sold_out' | t }}
+                                    </span>
+                                  {% endif %}
+                                  
+                                    </div>
+                                  </label> 
+                                {% endfor %}
+                              </fieldset>
+
+                            <style>
+                            .customItemVariantBox{
+                              display: flex;
+                              justify-content: space-between;
+                            }
+                            .customItemVariant .variantPrice{
+                                display: flex;
+                                  flex-direction: column;
+                                  align-items: center;
+                                  justify-content: space-between;
+                            }
+                            .customItemVariant .variantValue{
+                                font-weight: 700;
+                                font-size: 24px;
+                                line-height: 100%;
+                                margin-bottom: 8px;
+                            }
+                            .customItemVariant .price--compare{
+                              font-weight: 700;
+                                font-size: 20px;
+                              line-height: 100%;
+                              color: #ee5454;
+                              margin-bottom: 2px;
+                              text-decoration: line-through;
+                            }
+                            .customItemVariant .price--sale{
+                                font-weight: 700;
+                                font-size: 32px;
+                                line-height: 100%;
+                                margin-bottom: 2px;
+                            color:#333;
+                            }
+                            .customItemVariant .discount {
+                                  background: #f7dc5a;
+                                  border-radius: 8px;
+                                  padding: 4px 12px;
+                                  font-weight: 700;
+                                  font-size: 14px;
+                                  line-height: 100%;
+                                  margin-bottom: 8px;
+                              }
+                            </style>
+
+  
+                            
+                            
+                            {% else %}
+                            {% endif %}
